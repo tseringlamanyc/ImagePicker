@@ -77,7 +77,7 @@ class ImagesViewController: UIViewController {
         
         // persist imageObject to documents directory
         do {
-           try dataPersistence.create(item: imageObject)
+            try dataPersistence.create(item: imageObject)
         } catch {
             print("\(error)")
         }
@@ -148,11 +148,15 @@ extension ImagesViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        // step 4: create an instance of object
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as? ImageCell else {
             fatalError("could not downcast to an ImageCell")
         }
         let imageObject = imageObjects[indexPath.row]
         cell.configureCell(imageObject: imageObject)
+        
+        // step 5: set delegate object
+        cell.delegate = self
         return cell
     }
 }
@@ -163,6 +167,40 @@ extension ImagesViewController: UICollectionViewDelegateFlowLayout {
         let maxWidth: CGFloat = UIScreen.main.bounds.size.width // width of the device
         let itemWidth: CGFloat = maxWidth * 0.80
         return CGSize(width: itemWidth, height: itemWidth)  }
+}
+
+// step: 6 conform to delegate
+extension ImagesViewController: ImageCellDelegate {
+    func didLongPressed(cell: ImageCell) {
+        guard let indexpath = collectionView.indexPath(for: cell) else {
+            return
+        }
+        
+        // present an action sheet
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] (alertAction) in
+            self?.deleteImageObject(indexpath: indexpath)
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: <#T##((UIAlertAction) -> Void)?##((UIAlertAction) -> Void)?##(UIAlertAction) -> Void#>)
+        alertController.addAction(deleteAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true)
+    }
+    
+    private func deleteImageObject(indexpath: IndexPath) {
+        // delete from document directory
+        do {
+            try dataPersistence.delete(event: indexpath.row)
+            
+            // delete from image from imageobjects
+            imageObjects.remove(at: indexpath.row)
+            
+            // delete cell from colletion view
+            collectionView.deleteItems(at: [indexpath])
+        } catch {
+            print("\(error)")
+        }
+    }
 }
 
 // more here: https://nshipster.com/image-resizing/

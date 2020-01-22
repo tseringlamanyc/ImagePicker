@@ -8,9 +8,19 @@
 
 import UIKit
 
+// step 1: define protocol
+protocol ImageCellDelegate: AnyObject { // anyobject requires imagecelldelegate only works w classes
+    // list required functions
+    
+    func didLongPressed(cell: ImageCell)
+}
+
 class ImageCell: UICollectionViewCell {
     
     @IBOutlet weak var imageView: UIImageView!
+    
+    // step 2: optional delegate variable 
+    weak var delegate: ImageCellDelegate?
     
     // longpressed recognizer
     private lazy var longPressedGesture: UILongPressGestureRecognizer = {
@@ -28,6 +38,13 @@ class ImageCell: UICollectionViewCell {
     
     @objc
     private func longPressedAction(gesture: UILongPressGestureRecognizer) {
+        if gesture.state == .began {
+            gesture.state = .cancelled
+            return
+        }
+        
+        // step 3: creating custom delegate to notify any updates when user long presses
+        delegate?.didLongPressed(cell: self)  // imagesViewController.didLongPress
         
     }
     
