@@ -40,13 +40,13 @@ class ImagesViewController: UIViewController {
         let imageObject = ImageObject(imageData: imageData, date: Date())
         
         // insert image
-        imageObjects.insert(imageObject, at: 0)
+        imageObjects.insert(imageObject, at: 0)  // insert at top
         
         // create an indexpath for insertion into collection view
         let indexpath = IndexPath(row: 0, section: 0)
         
         // insert new cell into collection view
-        collectionView.insertItems(at: [indexpath])
+        collectionView.insertItems(at: [indexpath]) // adding one at a time
     }
     
     @IBAction func addPictureButton(_ sender: UIBarButtonItem) {
@@ -79,11 +79,8 @@ class ImagesViewController: UIViewController {
         if isCameraSelected {
             imagePickerController.sourceType = .camera
         }
-        
         present(imagePickerController, animated: true)
     }
-    
-    
 }
 
 extension ImagesViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -96,11 +93,12 @@ extension ImagesViewController: UIImagePickerControllerDelegate, UINavigationCon
         guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else {
             return
         }
-        
+        selectedImage = image
+        dismiss(animated: true)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        <#code#>
+        
     }
     
 }
@@ -108,13 +106,15 @@ extension ImagesViewController: UIImagePickerControllerDelegate, UINavigationCon
 // MARK: - UICollectionViewDataSource
 extension ImagesViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 50
+        return imageObjects.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as? ImageCell else {
             fatalError("could not downcast to an ImageCell")
         }
+        let imageObject = imageObjects[indexPath.row]
+        cell.configureCell(imageObject: imageObject)
         return cell
     }
 }

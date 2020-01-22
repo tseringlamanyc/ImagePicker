@@ -17,4 +17,12 @@ class ImageCell: UICollectionViewCell {
     layer.cornerRadius = 20.0
     backgroundColor = .orange
   }
+    
+    public func configureCell(imageObject: ImageObject) {
+        // converint data to UIImage 
+        guard let image = UIImage(data: imageObject.imageData) else {
+            return
+        }
+        imageView.image = image
+    }
 }
