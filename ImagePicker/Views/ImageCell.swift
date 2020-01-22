@@ -9,20 +9,22 @@
 import UIKit
 
 class ImageCell: UICollectionViewCell {
-  
-  @IBOutlet weak var imageView: UIImageView!
-  
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    layer.cornerRadius = 20.0
-    backgroundColor = .orange
-  }
+    
+    @IBOutlet weak var imageView: UIImageView!
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.cornerRadius = 20.0
+        backgroundColor = .orange
+    }
     
     public func configureCell(imageObject: ImageObject) {
-        // converint data to UIImage 
+        
+        // convering data to UIImage
         guard let image = UIImage(data: imageObject.imageData) else {
             return
         }
+        
         imageView.image = image
     }
 }

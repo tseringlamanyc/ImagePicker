@@ -16,6 +16,8 @@ class ImagesViewController: UIViewController {
     
     private var imagePickerController = UIImagePickerController()
     
+    private let dataPersistence = PersistenceHelper(filename: "images.plist")
+    
     private var selectedImage: UIImage? {
         didSet {
             appendNewPhoto()
@@ -29,6 +31,15 @@ class ImagesViewController: UIViewController {
         
         // set UIImagePickerController delegate
         imagePickerController.delegate = self
+        loadImageObjects()
+    }
+    
+    private func loadImageObjects() {
+        do {
+            imageObjects = try dataPersistence.loadEvents()
+        } catch {
+            print("\(error)")
+        }
     }
     
     private func appendNewPhoto() {
@@ -47,6 +58,15 @@ class ImagesViewController: UIViewController {
         
         // insert new cell into collection view
         collectionView.insertItems(at: [indexpath]) // adding one at a time
+        
+        // persist imageObject to documents directory
+        do {
+           try dataPersistence.create(item: imageObject)
+        } catch {
+            print("\(error)")
+        }
+        
+        
     }
     
     @IBAction func addPictureButton(_ sender: UIBarButtonItem) {
@@ -55,7 +75,9 @@ class ImagesViewController: UIViewController {
         
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let cameraAction = UIAlertAction(title: "Camera", style: .default)
+        let cameraAction = UIAlertAction(title: "Camera", style: .default) { [weak self] alertAction in
+            self?.showImageController(isCameraSelected: true)
+        }
         
         let photoLib = UIAlertAction(title: "Photo Library", style: .default) { [weak self] alertAction in
             self?.showImageController(isCameraSelected: false)
