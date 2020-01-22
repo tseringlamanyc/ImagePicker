@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ImagesViewController: UIViewController {
     
@@ -44,11 +45,26 @@ class ImagesViewController: UIViewController {
     
     private func appendNewPhoto() {
         //convert UIImage to data
-        guard let image = selectedImage, let imageData = image.jpegData(compressionQuality: 1.0) else {
+        guard let image = selectedImage else {
             return
         }
+        
+        // size image
+        let size = UIScreen.main.bounds.size
+        
+        // we will maintain aspect ratio
+        let rect = AVMakeRect(aspectRatio: image.size, insideRect: CGRect(origin: CGPoint.zero, size: size))
+        
+        // resize image
+        let resizeImage = image.resizeImage(to: rect.size.width, height: rect.size.height)
+        
+        // converts UIImage to data
+        guard let resizeImageData = resizeImage.jpegData(compressionQuality: 1.0) else {
+            return
+        }
+        
         // create an image object array
-        let imageObject = ImageObject(imageData: imageData, date: Date())
+        let imageObject = ImageObject(imageData: resizeImageData, date: Date())
         
         // insert image
         imageObjects.insert(imageObject, at: 0)  // insert at top
