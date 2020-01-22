@@ -19,6 +19,25 @@ class ImagesViewController: UIViewController {
     collectionView.dataSource = self
     collectionView.delegate = self
   }
+    
+    
+    @IBAction func addPictureButton(_ sender: UIBarButtonItem) {
+        // present an action sheet to the user
+        // actions: camera, photo library or cancel
+        
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let cameraAction = UIAlertAction(title: "Camera", style: .default) { (<#UIAlertAction#>) in
+            <#code#>
+        }
+        let photoLib = UIAlertAction(title: "Photo Library", style: .default, handler: <#T##((UIAlertAction) -> Void)?##((UIAlertAction) -> Void)?##(UIAlertAction) -> Void#>)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        alertController.addAction(cameraAction)
+        alertController.addAction(photoLib)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true)
+    }
+    
+    
 }
 
 // MARK: - UICollectionViewDataSource
@@ -38,7 +57,7 @@ extension ImagesViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 extension ImagesViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    let maxWidth: CGFloat = UIScreen.main.bounds.size.width
+    let maxWidth: CGFloat = UIScreen.main.bounds.size.width // width of the device
     let itemWidth: CGFloat = maxWidth * 0.80
     return CGSize(width: itemWidth, height: itemWidth)  }
 }
