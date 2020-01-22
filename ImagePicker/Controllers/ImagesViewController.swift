@@ -181,24 +181,31 @@ extension ImagesViewController: ImageCellDelegate {
         let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] (alertAction) in
             self?.deleteImageObject(indexpath: indexpath)
         }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: <#T##((UIAlertAction) -> Void)?##((UIAlertAction) -> Void)?##(UIAlertAction) -> Void#>)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         alertController.addAction(deleteAction)
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
     }
     
     private func deleteImageObject(indexpath: IndexPath) {
+        dataPersistence.sync(items: imageObjects)
         // delete from document directory
         do {
-            try dataPersistence.delete(event: indexpath.row)
-            
-            // delete from image from imageobjects
-            imageObjects.remove(at: indexpath.row)
-            
-            // delete cell from colletion view
-            collectionView.deleteItems(at: [indexpath])
+            imageObjects = try dataPersistence.loadEvents()
         } catch {
             print("\(error)")
+        }
+        
+        // delete from image from imageobjects
+        imageObjects.remove(at: indexpath.row)
+        
+        // delete cell from colletion view
+        collectionView.deleteItems(at: [indexpath])
+        
+        do {
+            try dataPersistence.delete(event: indexpath.row)
+        } catch {
+            print("\(error)") 
         }
     }
 }

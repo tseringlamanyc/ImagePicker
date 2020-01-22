@@ -21,7 +21,7 @@ class PersistenceHelper {
   // CRUD - create, read, update, delete
   
   // array of events
-  private var events = [ImageObject]()
+  private var items = [ImageObject]()
   
   private var filename: String
   
@@ -39,7 +39,7 @@ class PersistenceHelper {
     do {
       // step 3.
       // convert (serialize) the events array to Data
-      let data = try PropertyListEncoder().encode(events)
+      let data = try PropertyListEncoder().encode(items)
       
       // step 4.
       // writes, saves, persist the data to the documents directory
@@ -51,8 +51,8 @@ class PersistenceHelper {
   }
   
   // for re-ordering
-  public func reorderEvents(events: [ImageObject]) {
-    self.events = events
+  public func sync(items: [ImageObject]) {
+    self.items = items
     try? save()
   }
   
@@ -62,7 +62,7 @@ class PersistenceHelper {
   public func create(item: ImageObject) throws {
     // step 2.
     // append new event to the events array
-    events.append(item)
+    items.append(item)
     
     do {
       try save()
@@ -81,7 +81,7 @@ class PersistenceHelper {
     if FileManager.default.fileExists(atPath: url.path) {
       if let data = FileManager.default.contents(atPath: url.path) {
         do {
-          events = try PropertyListDecoder().decode([ImageObject].self, from: data)
+          items = try PropertyListDecoder().decode([ImageObject].self, from: data)
         } catch {
           throw DataPersistenceError.decodingError(error)
         }
@@ -92,13 +92,13 @@ class PersistenceHelper {
     else {
       throw DataPersistenceError.fileDoesNotExist(filename)
     }
-    return events
+    return items
   }
   
   // delete - remove item from documents directory
   public func delete(event index: Int) throws {
     // remove the item from the events array
-    events.remove(at: index)
+    items.remove(at: index)
     
     // save our events array to the documents directory
     do {
