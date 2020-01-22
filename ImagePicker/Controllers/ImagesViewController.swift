@@ -13,6 +13,7 @@ class ImagesViewController: UIViewController {
   @IBOutlet weak var collectionView: UICollectionView!
       
   private var imageObjects = [ImageObject]()
+  private var imagePickerController = UIImagePickerController()
     
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -29,12 +30,30 @@ class ImagesViewController: UIViewController {
         let cameraAction = UIAlertAction(title: "Camera", style: .default) { (<#UIAlertAction#>) in
             <#code#>
         }
-        let photoLib = UIAlertAction(title: "Photo Library", style: .default, handler: <#T##((UIAlertAction) -> Void)?##((UIAlertAction) -> Void)?##(UIAlertAction) -> Void#>)
+        let photoLib = UIAlertAction(title: "Photo Library", style: .default) { [weak self] alertAction in
+            self?.showImageController(isCameraSelected: false)
+        }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-        alertController.addAction(cameraAction)
+        
+        // check if camera is available
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+           alertController.addAction(cameraAction)
+        }
+        
         alertController.addAction(photoLib)
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
+    }
+    
+    private func showImageController(isCameraSelected: Bool) {
+        // source type default will be .photoLibrary
+        imagePickerController.sourceType = .photoLibrary
+        
+        if isCameraSelected {
+            imagePickerController.sourceType = .camera
+        }
+        
+        present(imagePickerController, animated: true)
     }
     
     
